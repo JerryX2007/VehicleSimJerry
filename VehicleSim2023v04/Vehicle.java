@@ -192,6 +192,7 @@ public abstract class Vehicle extends SuperSmoothMover
         // factors to reduce driving speed.
         if (otherVehicleSpeed >= 0 && otherVehicleSpeed < maxSpeed){ // Vehicle ahead is slower?
             speed = otherVehicleSpeed;
+            attemptLaneChange();
         }
         else {
             speed = maxSpeed; // nothing impeding speed, so go max speed
@@ -212,5 +213,12 @@ public abstract class Vehicle extends SuperSmoothMover
     }
     public void setMoving(boolean moving) {
         this.moving = moving;
+    }
+    public void attemptLaneChange() {
+        Vehicle vehicleOnRight = (Vehicle) getOneObjectAtOffset(0, (int)(direction * getImage().getHeight()/2 + (int)(direction * speed)), Pedestrian.class);
+        Pedestrian ppp = (Pedestrian) getOneObjectAtOffset(0, (int)(-1*direction * getImage().getHeight()/2 + (int)(-1*direction * speed)), Pedestrian.class);
+        if(myLaneNumber == 0) {
+            
+        }
     }
 }

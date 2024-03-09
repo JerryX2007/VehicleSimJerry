@@ -1,4 +1,5 @@
 import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
+import java.util.*;
 
 /**
  * The Ambulance subclass
@@ -23,11 +24,9 @@ public class Ambulance extends Vehicle
     }
 
     public boolean checkHitPedestrian () {
-        Pedestrian p = (Pedestrian)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, 0, Pedestrian.class);
-        if (p != null)
-        {
+        ArrayList<Pedestrian> pedestrianList = (ArrayList<Pedestrian>)getObjectsAtOffset((int)speed + getImage().getWidth()/2, 0, Pedestrian.class);
+        for (Pedestrian p : pedestrianList) {
             p.healMe();
-            return true;
         }
         return false;
     }
