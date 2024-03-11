@@ -24,9 +24,17 @@ public class Ambulance extends Vehicle
     }
 
     public boolean checkHitPedestrian () {
-        ArrayList<Pedestrian> pedestrianList = (ArrayList<Pedestrian>)getObjectsAtOffset((int)speed + getImage().getWidth()/2, 0, Pedestrian.class);
-        for (Pedestrian p : pedestrianList) {
+        Pedestrian p = (Pedestrian)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, 0, Pedestrian.class);
+        if (p == null){
+            p = (Pedestrian)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, -getImage().getHeight(), Pedestrian.class);
+        }
+        if(p == null){
+            p = (Pedestrian)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, getImage().getHeight(), Pedestrian.class);
+        }
+        if (p != null && !p.isAwake())
+        {
             p.healMe();
+            return true;
         }
         return false;
     }
