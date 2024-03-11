@@ -215,10 +215,17 @@ public abstract class Vehicle extends SuperSmoothMover
         this.moving = moving;
     }
     public void attemptLaneChange() {
-        Vehicle vehicleOnRight = (Vehicle) getOneObjectAtOffset(0, (int)(direction * getImage().getHeight()/2 + (int)(direction * speed)), Pedestrian.class);
-        Pedestrian ppp = (Pedestrian) getOneObjectAtOffset(0, (int)(-1*direction * getImage().getHeight()/2 + (int)(-1*direction * speed)), Pedestrian.class);
+        Vehicle vehicleOnRight = (Vehicle) getOneObjectAtOffset(0, (int)(direction * getImage().getHeight()/2 + (int)(direction * speed)), Vehicle.class);
+        Vehicle vehicleOnLeft = (Vehicle) getOneObjectAtOffset(0, (int)(-1*direction * getImage().getHeight()/2 + (int)(-1*direction * speed)), Vehicle.class);
         if(myLaneNumber == 0) {
-            
+            if(vehicleOnRight == null) {
+                myLaneNumber++;
+            }
+        }
+        else if (myLaneNumber == 4) {
+            if(vehicleOnLeft == null) {
+                myLaneNumber--;
+            }
         }
     }
 }
