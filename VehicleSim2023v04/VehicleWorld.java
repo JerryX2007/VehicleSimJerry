@@ -28,7 +28,6 @@ import java.util.ArrayList;
 public class VehicleWorld extends World
 {
     private GreenfootImage background;
-    private GreenfootImage background_NIGHT;
 
     // Color Constants
     public static Color GREY_BORDER = new Color (108, 108, 108);
@@ -41,7 +40,10 @@ public class VehicleWorld extends World
     public static final int TOP_SPAWN = 190; // Pedestrians who spawn on top
     public static final int BOTTOM_SPAWN = 705; // Pedestrians who spawn on the bottom
 
-
+    // Variables for the day/night cycle
+    private int counter = 0;
+    private int acts = 300;
+    private boolean isNight = false;
     
     // Instance variables / Objects
     private boolean twoWayTraffic, splitAtCenter;
@@ -72,8 +74,8 @@ public class VehicleWorld extends World
 
         // set up background -- If you change this, make 100% sure
         // that your chosen image is the same size as the World
-        background_NIGHT = new GreenfootImage("night.png");
-        setBackground (background_NIGHT);
+        background = new GreenfootImage("day.png");
+        setBackground (background);
         // Set critical variables - will affect lane drawing
         laneCount = 5;
         laneHeight = 48;
@@ -85,17 +87,35 @@ public class VehicleWorld extends World
         laneSpawners = new VehicleSpawner[laneCount];
 
         // Prepare lanes method - draws the lanes
-        lanePositionsY = prepareLanes (this, background_NIGHT, laneSpawners, 360, laneHeight, laneCount, spaceBetweenLanes, twoWayTraffic, splitAtCenter);
+        lanePositionsY = prepareLanes (this, background, laneSpawners, 360, laneHeight, laneCount, spaceBetweenLanes, twoWayTraffic, splitAtCenter);
 
         laneSpawners[0].setSpeedModifier(0.8);
         laneSpawners[3].setSpeedModifier(1.4);
 
-        setBackground (background_NIGHT);
+        setBackground (background);
     }
 
+    public void effect () {
+        if (counter < acts) {
+            counter++;
+        }
+        else {
+            background = DayNightCycle.currentBackground(isNight);
+            prepareLanes (this, background, laneSpawners, 360, laneHeight, laneCount, spaceBetweenLanes, twoWayTraffic, splitAtCenter);
+            setBackground (background);
+            if(isNight) {
+                isNight = false;
+            }
+            else {
+                isNight = true;
+            }
+            counter = 0;
+        }
+    }
     public void act () {
         spawn();
         zSort ((ArrayList<Actor>)(getObjects(Actor.class)), this);
+        effect();
     }
 
     private void spawn () {

@@ -25,24 +25,35 @@ public class Ambulance extends Vehicle
 
     public boolean checkHitPedestrian () {
         boolean healed = false;
-        ArrayList<Pedestrian> allPedestrians = (ArrayList<Pedestrian>) getObjectsAtOffset((int)speed + getImage().getWidth()/2, 0, Pedestrian.class);
-        ArrayList<Pedestrian> leftPedestrians = (ArrayList<Pedestrian>) getObjectsAtOffset((int)speed+getImage().getWidth()/2, -getImage().getHeight()-30, Pedestrian.class);
-        ArrayList<Pedestrian> rightPedestrians = (ArrayList<Pedestrian>) getObjectsAtOffset((int)speed+getImage().getWidth()/2, getImage().getHeight()+30, Pedestrian.class);
-        for( Pedestrian p : leftPedestrians) {
-            allPedestrians.add(p);
+        ArrayList<Pedestrian> pedestrianList = (ArrayList<Pedestrian>) getObjectsAtOffset((int)speed + getImage().getWidth()/2, 0, Pedestrian.class);
+        
+        for (Pedestrian p : pedestrianList) {
+            if (!p.isAwake()) {
+                p.healMe();
+                healed = true;
+            }
         }
-        for( Pedestrian p : rightPedestrians) {
-            allPedestrians.add(p);
+        if(healed) {
+            return true;
         }
-        for( Pedestrian p : allPedestrians) {
-            p.healMe();
-            healed = true;
-        }
-        if(healed) {return true;}
         else {
             return false;
         }
         
-    }
+        /*Pedestrian p = (Pedestrian)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, 0, Pedestrian.class);
+        if (p == null){
+            p = (Pedestrian)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, -getImage().getHeight(), Pedestrian.class);
+        }
+        if(p == null){
+            p = (Pedestrian)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, getImage().getHeight(), Pedestrian.class);
+        }
+        if (p != null && !p.isAwake())
+        {
+            p.healMe();
+            return true;
+        }
+        return false;
+        */
+    } 
     
 }
