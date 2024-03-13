@@ -354,6 +354,10 @@ public class VehicleWorld extends World
     public static int[] prepareLanes (World world, GreenfootImage target, VehicleSpawner[] spawners, int startY, int heightPerLane, int lanes, int spacing, boolean twoWay, boolean centreSplit){
         return prepareLanes (world, target, spawners, startY, heightPerLane, lanes, spacing, twoWay, centreSplit, spacing);
     }
+    
+    public int getLaneHeight() {
+        return laneHeight;
+    }
 
 }
 

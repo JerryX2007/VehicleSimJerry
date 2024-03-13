@@ -16,6 +16,7 @@ public abstract class Vehicle extends SuperSmoothMover
     protected VehicleSpawner origin;
     protected int followingDistance;
     protected int myLaneNumber;
+    protected VehicleWorld myWorld = new VehicleWorld();
 
     protected abstract boolean checkHitPedestrian ();
 
@@ -191,7 +192,6 @@ public abstract class Vehicle extends SuperSmoothMover
         // You can ADD ELSE IF options to allow other 
         // factors to reduce driving speed.
         if (otherVehicleSpeed >= 0 && otherVehicleSpeed < maxSpeed){ // Vehicle ahead is slower?
-            speed = otherVehicleSpeed;
             attemptLaneChange();
         }
         else {
@@ -215,16 +215,39 @@ public abstract class Vehicle extends SuperSmoothMover
         this.moving = moving;
     }
     public void attemptLaneChange() {
+        int originalLaneNumber = myLaneNumber;
         Vehicle vehicleOnRight = (Vehicle) getOneObjectAtOffset(0, (int)(direction * getImage().getHeight()/2 + (int)(direction * speed)), Vehicle.class);
         Vehicle vehicleOnLeft = (Vehicle) getOneObjectAtOffset(0, (int)(-1*direction * getImage().getHeight()/2 + (int)(-1*direction * speed)), Vehicle.class);
         if(myLaneNumber == 0) {
             if(vehicleOnRight == null) {
                 myLaneNumber++;
+                setLocation(getX(), getY()+myWorld.getLaneHeight());
             }
         }
         else if (myLaneNumber == 4) {
             if(vehicleOnLeft == null) {
                 myLaneNumber--;
+                setLocation(getX(), getY()-myWorld.getLaneHeight());
+            }
+        }
+        else {
+            if(vehicleOnRight == null) {
+                myLaneNumber++;
+                setLocation(getX(), getY()+myWorld.getLaneHeight());
+            }
+            else if (vehicleOnLeft == null) {
+                myLaneNumber--;
+                setLocation(getX(), getY()-myWorld.getLaneHeight());
+            }
+        }
+        if(originalLaneNumber != myLaneNumber) {
+            if(originalLaneNumber > myLaneNumber && this.isTouching(Vehicle.class)) {
+                setLocation(getX(), getY()-myWorld.getLaneHeight());
+                myLaneNumber = originalLaneNumber;
+            }
+            else if (originalLaneNumber < myLaneNumber && this.isTouching(Vehicle.class)) {
+                setLocation(getX(), getY()+myWorld.getLaneHeight());
+                myLaneNumber = originalLaneNumber;
             }
         }
     }
