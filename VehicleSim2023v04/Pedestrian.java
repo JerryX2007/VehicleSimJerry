@@ -15,7 +15,25 @@ public abstract class Pedestrian extends SuperSmoothMover
      * Act - do whatever the Pedestrian wants to do. This method is called whenever
      * the 'Act' or 'Run' button gets pressed in the environment.
      */
-    public abstract void act();
+    public void act() {
+        if(paused()) {
+            delayCount--;
+            return;
+        }
+        // Awake is false if the Pedestrian is "knocked down"
+        if (awake){
+            // Check in the direction I'm moving vertically for a Vehicle -- and only move if there is no Vehicle in front of me.
+            if (getOneObjectAtOffset(0, (int)(direction * getImage().getHeight()/2 + (int)(direction * speed)), Vehicle.class) == null){
+                setLocation (getX(), getY() + (speed*direction));
+            }
+            if (direction == -1 && getY() < 100){
+                getWorld().removeObject(this);
+            } else if (direction == 1 && getY() > getWorld().getHeight() - 30){
+                getWorld().removeObject(this);
+            }
+
+        }
+    }
 
     /**
      * Method to cause this Pedestrian to become knocked down - stop moving, turn onto side
