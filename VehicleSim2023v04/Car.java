@@ -10,7 +10,7 @@ public class Car extends Vehicle
     
     public Car(VehicleSpawner origin) {
         super(origin); // call the superclass' constructor
-        maxSpeed = 1.5 + ((Math.random() * 30)/5);
+        maxSpeed = 3 + ((Math.random() * 30)/5);
         speed = maxSpeed;
         yOffset = 4;
         int z;

@@ -15,6 +15,9 @@ public class Adult extends Pedestrian
         awake = true;
         entering = true;
         this.direction = direction;
+        GreenfootImage image = getImage();
+        image.scale(image.getWidth()/12, image.getHeight()/12);
+        setImage(image);
     }
     /**
      * Act - do whatever the Adult wants to do. This method is called whenever

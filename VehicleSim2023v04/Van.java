@@ -34,10 +34,6 @@ public class Van extends Vehicle
                 return true;
             }
         }
-        else if (p instanceof Child) {
-            isContainingChild = true;
-            
-        }
         return false;
         
     }

@@ -24,36 +24,25 @@ public class Ambulance extends Vehicle
     }
 
     public boolean checkHitPedestrian () {
-        boolean healed = false;
-        ArrayList<Pedestrian> pedestrianList = (ArrayList<Pedestrian>) getObjectsAtOffset((int)speed + getImage().getWidth()/2, 0, Pedestrian.class);
+        Pedestrian pedestrianInFront = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, 0, Pedestrian.class);
+        Pedestrian pedestrianOnLeft = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, getImage().getHeight()/2+6, Pedestrian.class);
+        Pedestrian pedestrianOnRight = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, -1*getImage().getHeight()/2-6, Pedestrian.class);
         
-        for (Pedestrian p : pedestrianList) {
-            if (!p.isAwake()) {
-                p.healMe();
-                healed = true;
-            }
-        }
-        if(healed) {
+        if(pedestrianInFront != null && !pedestrianInFront.isAwake()) {
+            pedestrianInFront.healMe();
             return true;
         }
-        else {
-            return false;
-        }
-        
-        /*Pedestrian p = (Pedestrian)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, 0, Pedestrian.class);
-        if (p == null){
-            p = (Pedestrian)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, -getImage().getHeight(), Pedestrian.class);
-        }
-        if(p == null){
-            p = (Pedestrian)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, getImage().getHeight(), Pedestrian.class);
-        }
-        if (p != null && !p.isAwake())
-        {
-            p.healMe();
+        if(pedestrianOnLeft != null && !pedestrianOnLeft.isAwake()) {
+            pedestrianOnLeft.healMe();
             return true;
         }
+        if(pedestrianOnRight != null && !pedestrianOnRight.isAwake()) {
+            pedestrianOnRight.healMe();
+            return true;
+        }
+        
         return false;
-        */
+        
     } 
     
 }

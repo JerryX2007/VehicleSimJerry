@@ -44,6 +44,7 @@ public class VehicleWorld extends World
     private int counter = 0;
     private int acts = 300;
     private boolean isNight = false;
+    private int actCount;
     
     // Instance variables / Objects
     private boolean twoWayTraffic, splitAtCenter;
@@ -93,6 +94,8 @@ public class VehicleWorld extends World
         laneSpawners[3].setSpeedModifier(1.4);
 
         setBackground (background);
+        
+        actCount = 0;
     }
 
     public void effect () {
@@ -111,11 +114,15 @@ public class VehicleWorld extends World
             }
             counter = 0;
         }
+        if (actCount % 600 == 0){
+            addObject(new Snowstorm(), 0,0);
+        }
     }
     public void act () {
         spawn();
         zSort ((ArrayList<Actor>)(getObjects(Actor.class)), this);
         effect();
+        actCount++;
     }
 
     private void spawn () {
@@ -147,13 +154,6 @@ public class VehicleWorld extends World
                     addObject (new Adult (1), xSpawnLocation, TOP_SPAWN);
                 } else {
                     addObject (new Adult (-1), xSpawnLocation, BOTTOM_SPAWN);
-                }
-            }
-            else if (pedestrianType == 3) {
-                if (spawnAtTop){
-                    addObject (new Child (1), xSpawnLocation, TOP_SPAWN);
-                } else {
-                    addObject (new Child (-1), xSpawnLocation, BOTTOM_SPAWN);
                 }
             }
         }
@@ -357,6 +357,10 @@ public class VehicleWorld extends World
     
     public int getLaneHeight() {
         return laneHeight;
+    }
+    
+    public int getSpaceBetweenLanes() {
+        return spaceBetweenLanes;
     }
 
 }
