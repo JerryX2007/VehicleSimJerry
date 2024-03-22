@@ -16,12 +16,10 @@ public abstract class Effect extends Actor
     public void act() {
         
     }
-    
     protected void fade (int timeLeft, int totalFadeTime){
         double percent = (double)timeLeft / totalFadeTime;
         if (percent > 1.0) return;
         int newTransparency = (int)(percent * 255);
         image.setTransparency(newTransparency);
     }
-    
 }

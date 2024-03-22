@@ -17,6 +17,10 @@ public abstract class Vehicle extends SuperSmoothMover
     protected int followingDistance;
     protected int myLaneNumber;
     protected VehicleWorld myWorld = new VehicleWorld();
+    protected GreenfootSound[] honks;
+    protected int honkIndex;
+    protected GreenfootSound[] hitPedestrianSounds;
+    protected int hitIndex;
 
     protected abstract boolean checkHitPedestrian ();
 
@@ -46,6 +50,12 @@ public abstract class Vehicle extends SuperSmoothMover
                       // it's starting position once. Vehicles are removed and re-added
                       // to the world (instantly, not visibly) by the z-sort, and without this,
                       // they would continue to return to their start points.
+        honks = new GreenfootSound[5];
+        for(int i=0;i<honks.length;i++) {
+            honks[i] = new GreenfootSound("honk.mp3");
+            honks[i].setVolume(30);
+        }
+        honkIndex = 0;
     }
 
     /**
@@ -186,23 +196,29 @@ public abstract class Vehicle extends SuperSmoothMover
         Vehicle ahead = (Vehicle) getOneObjectAtOffset (direction * (int)(speed + getImage().getWidth()/2 + 6), 0, Vehicle.class);
         double otherVehicleSpeed = -1;
         if (ahead != null) {
+            honks[honkIndex].play();
+            honkIndex++;
+            if(honkIndex == honks.length) {
+                honkIndex = 0;
+            }
+            attemptLaneChange();
             otherVehicleSpeed = ahead.getSpeed();
+            if (otherVehicleSpeed >= 0 && otherVehicleSpeed < maxSpeed){ // Vehicle ahead is slower?
+                speed = otherVehicleSpeed;
+            }
+            else {
+                speed = maxSpeed; // nothing impeding speed, so go max speed
+            }
         }
         // Various things that may slow down driving speed 
         // You can ADD ELSE IF options to allow other 
         // factors to reduce driving speed.
         if (otherVehicleSpeed >= 0 && otherVehicleSpeed < maxSpeed){ // Vehicle ahead is slower?
-            System.out.println("slower");
-            if(!attemptLaneChange()) {
-                System.out.println("couldn't lane change");
-                speed = otherVehicleSpeed;
-            }
-            System.out.println("lane changed");
+            speed = otherVehicleSpeed;
         }
         else {
             speed = maxSpeed; // nothing impeding speed, so go max speed
         }
-        
 
         move (speed * direction);
     }   
@@ -218,6 +234,9 @@ public abstract class Vehicle extends SuperSmoothMover
     }
     public void setMoving(boolean moving) {
         this.moving = moving;
+    }
+    public void setSpeed(double spd){
+        speed = spd;
     }
     public boolean attemptLaneChange() {
         boolean toReturn = false;

@@ -37,7 +37,7 @@ public class VehicleWorld extends World
     public static boolean SHOW_SPAWNERS = true;
     
     // Set Y Positions for Pedestrians to spawn
-    public static final int TOP_SPAWN = 190; // Pedestrians who spawn on top
+    public static final int TOP_SPAWN = 200; // Pedestrians who spawn on top
     public static final int BOTTOM_SPAWN = 705; // Pedestrians who spawn on the bottom
 
     // Variables for the day/night cycle
@@ -51,6 +51,10 @@ public class VehicleWorld extends World
     private int laneHeight, laneCount, spaceBetweenLanes;
     private int[] lanePositionsY;
     private VehicleSpawner[] laneSpawners;
+    
+    // Sound variables
+    private GreenfootSound dayAmbience;
+    private GreenfootSound nightAmbience;
 
     /**
      * Constructor for objects of class MyWorld.
@@ -95,9 +99,26 @@ public class VehicleWorld extends World
 
         setBackground (background);
         
-        actCount = 0;
+        actCount = 1;
+        dayAmbience = new GreenfootSound("cityAmbience.mp3");
+        dayAmbience.setVolume(50);
+        nightAmbience = new GreenfootSound("nightAmbience.mp3");
+        nightAmbience.setVolume(50);
     }
-
+    public void started(){
+        if(!isNight){
+            dayAmbience.playLoop();
+        }
+        else{
+            nightAmbience.playLoop();
+        }
+        
+    }
+    
+    public void stopped(){
+        dayAmbience.stop();
+        nightAmbience.stop();
+    }
     public void effect () {
         if (counter < acts) {
             counter++;
@@ -108,14 +129,18 @@ public class VehicleWorld extends World
             setBackground (background);
             if(isNight) {
                 isNight = false;
+                dayAmbience.pause();
+                nightAmbience.playLoop();
             }
             else {
                 isNight = true;
+                dayAmbience.playLoop();
+                nightAmbience.pause();
             }
             counter = 0;
         }
         if (actCount % 600 == 0){
-            addObject(new Snowstorm(), 0,0);
+            addObject(new Rain(), getWidth()/2, getHeight()/2);
         }
     }
     public void act () {
@@ -154,6 +179,13 @@ public class VehicleWorld extends World
                     addObject (new Adult (1), xSpawnLocation, TOP_SPAWN);
                 } else {
                     addObject (new Adult (-1), xSpawnLocation, BOTTOM_SPAWN);
+                }
+            }
+            else if (pedestrianType == 3) {
+                if (spawnAtTop){
+                    addObject (new Baby (1), xSpawnLocation, TOP_SPAWN);
+                } else {
+                    addObject (new Baby (-1), xSpawnLocation, BOTTOM_SPAWN);
                 }
             }
         }

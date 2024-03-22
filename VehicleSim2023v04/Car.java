@@ -27,7 +27,7 @@ public class Car extends Vehicle
      * When a Car hit's a Pedestrian, it should knock it over
      */
     public boolean checkHitPedestrian () {
-        Pedestrian p = (Pedestrian)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, 0, Pedestrian.class);
+        Adult p = (Adult)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, 0, Adult.class);
         if (p != null)
         {
             p.knockDown();

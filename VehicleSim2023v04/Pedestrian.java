@@ -38,18 +38,39 @@ public abstract class Pedestrian extends SuperSmoothMover
     /**
      * Method to cause this Pedestrian to become knocked down - stop moving, turn onto side
      */
-    public abstract void knockDown ();
+    public void knockDown () {
+        speed = 0;
+        setRotation (direction * 90);
+        awake = false;
+    }
 
-    public abstract void setAwake(boolean state);
+    public void setAwake(boolean state) {
+        awake = state;
+    }
     
     /**
      * Method to allow a downed Pedestrian to be healed
      */
-    public abstract void healMe ();
+    public void healMe () {
+        speed = maxSpeed;
+        setRotation (0);
+        awake = true;
+    }
 
-    public abstract boolean isAwake ();
+     public boolean isAwake () {
+        return awake;
+    }
     
-    public abstract boolean paused();
+    public boolean paused() {
+        return delayCount > 0;
+    }
     
-    public abstract void setDelay(int actCount);
+    public void setDelay(int actCount)
+    {
+        delayCount = actCount;
+    }
+    
+    public void setSpeed(double spd){
+        speed = spd;
+    }
 }

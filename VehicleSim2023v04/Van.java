@@ -5,7 +5,7 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
  */
 public class Van extends Vehicle
 {
-    private boolean isContainingChild;
+    private boolean isContainingBaby;
     
     public Van(VehicleSpawner origin) {
         super(origin); // call the superclass' constructor
@@ -14,7 +14,7 @@ public class Van extends Vehicle
         yOffset = 8;
         int z;
         followingDistance = 6;
-        isContainingChild = false;
+        isContainingBaby = false;
     }
 
     public void act()
@@ -26,13 +26,19 @@ public class Van extends Vehicle
      * When a Car hit's a Pedestrian, it should knock it over
      */
     public boolean checkHitPedestrian () {
-        Pedestrian p = (Pedestrian)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, 0, Pedestrian.class);
-        if (p instanceof Adult) {
-            if (p != null)
-            {
-                p.knockDown();
-                return true;
-            }
+        Baby p = (Baby)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, 0, Baby.class);
+        if (p == null){
+            p = (Baby)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, -getImage().getHeight(), Baby.class);
+        }
+        if(p == null){
+            p = (Baby)getOneObjectAtOffset((int)speed + getImage().getWidth()/2, getImage().getHeight(), Baby.class);
+        }
+        if (p != null && !isContainingBaby)
+        {
+            getWorld().removeObject(p);
+            isContainingBaby = true;
+            p.makeCry();
+            return true;
         }
         return false;
         

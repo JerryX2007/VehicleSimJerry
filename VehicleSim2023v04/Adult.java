@@ -27,35 +27,4 @@ public class Adult extends Pedestrian
     {
         super.act();
     }
-    public void knockDown () {
-        speed = 0;
-        setRotation (direction * 90);
-        awake = false;
-    }
-
-    public void setAwake(boolean state) {
-        awake = state;
-    }
-    
-    /**
-     * Method to allow a downed Pedestrian to be healed
-     */
-    public void healMe () {
-        speed = maxSpeed;
-        setRotation (0);
-        awake = true;
-    }
-
-    public boolean isAwake () {
-        return awake;
-    }
-    
-    public boolean paused() {
-        return delayCount > 0;
-    }
-    
-    public void setDelay(int actCount)
-    {
-        delayCount = actCount;
-    }
 }

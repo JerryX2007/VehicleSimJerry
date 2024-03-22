@@ -15,7 +15,7 @@ public class Bus extends Vehicle
         speed = maxSpeed;
         lastSpeed = speed;
         // because the Bus graphic is tall, offset it a up (this may result in some collision check issues)
-        yOffset = 15;
+        yOffset = 6;
     }
 
     /**
