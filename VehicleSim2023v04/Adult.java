@@ -9,12 +9,7 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 public class Adult extends Pedestrian
 {
     public Adult(int direction) {
-        maxSpeed = Math.random() * 2 + 1;
-        speed = maxSpeed;
-        // start as awake 
-        awake = true;
-        entering = true;
-        this.direction = direction;
+        super(direction);
         GreenfootImage image = getImage();
         image.scale(image.getWidth()/12, image.getHeight()/12);
         setImage(image);

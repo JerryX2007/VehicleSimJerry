@@ -8,18 +8,11 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
  */
 public class Baby extends Pedestrian
 {
-    private GreenfootSound cry;
     public Baby(int direction) {
-        maxSpeed = Math.random() * 2 + 1;
-        speed = maxSpeed;
-        // start as awake 
-        awake = true;
-        entering = true;
-        this.direction = direction;
+        super(direction);
         GreenfootImage image = getImage();
         image.scale(image.getWidth()/12, image.getHeight()/12);
         setImage(image);
-        cry = new GreenfootSound("babyCry.mp3");
     }
     /**
      * Act - do whatever the Adult wants to do. This method is called whenever
@@ -28,10 +21,5 @@ public class Baby extends Pedestrian
     public void act()
     {
         super.act();
-    }
-    
-    public void makeCry() {
-        cry.setVolume(30);
-        cry.play();
     }
 }

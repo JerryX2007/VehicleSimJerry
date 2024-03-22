@@ -10,11 +10,22 @@ public abstract class Pedestrian extends SuperSmoothMover
     protected double maxSpeed;
     protected int direction; // direction is always -1 or 1, for moving down or up, respectively
     protected boolean awake, entering;
+    protected GreenfootSound death;
 
     /**
      * Act - do whatever the Pedestrian wants to do. This method is called whenever
      * the 'Act' or 'Run' button gets pressed in the environment.
      */
+    public Pedestrian(int direction) {
+        maxSpeed = Math.random() * 2 + 1;
+        speed = maxSpeed;
+        // start as awake 
+        awake = true;
+        entering = true;
+        this.direction = direction;
+        death = new GreenfootSound("death.mp3");
+        death.setVolume(30);
+    }
     public void act() {
         if(paused()) {
             delayCount--;
@@ -31,7 +42,6 @@ public abstract class Pedestrian extends SuperSmoothMover
             } else if (direction == 1 && getY() > getWorld().getHeight() - 30){
                 getWorld().removeObject(this);
             }
-
         }
     }
 
@@ -42,6 +52,7 @@ public abstract class Pedestrian extends SuperSmoothMover
         speed = 0;
         setRotation (direction * 90);
         awake = false;
+        death.play();
     }
 
     public void setAwake(boolean state) {
@@ -72,5 +83,9 @@ public abstract class Pedestrian extends SuperSmoothMover
     
     public void setSpeed(double spd){
         speed = spd;
+    }
+    
+    public void dies(){
+        getWorld().removeObject(this);
     }
 }
