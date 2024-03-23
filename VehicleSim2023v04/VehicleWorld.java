@@ -168,10 +168,7 @@ public class VehicleWorld extends World
         if(waitingForTrain) {
             trainCount++;
             spawnTrain();
-            System.out.println("waited for train" + trainCount);
-        }
-        else {
-            trainCount = 0;
+            //System.out.println("waited for train" + trainCount);
         }
     }
     
@@ -194,13 +191,42 @@ public class VehicleWorld extends World
             int bodyType = Greenfoot.getRandomNumber(3-i);
             trainBodyOrder.add(bodyType);
         }
-        if(!trainSpawner.isTouchingTrain() && currentTrains <= 4) {
+        System.out.println(trainBodyOrder);
+        System.out.println(trainBodies);
+        if(!trainSpawner.isTouchingTrain() && trainBodies != null) {
             if(trainCount >= 65) {
                 currentTrains++;
                 addObject(trainBodies.get(currentTrains-2), 0, 190);
+                trainBodies.remove(currentTrains);
+                trainCount = 0;
             }
         }
+        if(currentTrains == 4) {
+            waitingForTrain = false;
+            currentTrains = 0;
+        }
     }
+    
+    private void prepareTrains() {
+        if(!spawnedHead) {
+            addObject(new Head(), 0, 190);
+            spawnedHead = true;
+            currentTrains++;
+        }
+        TrainBody1 trainBody1 = new TrainBody1();
+        TrainBody2 trainBody2 = new TrainBody2();
+        TrainBody3 trainBody3 = new TrainBody3();
+        ArrayList<Train> trainBodies = new ArrayList<Train>();
+        trainBodies.add(trainBody1);
+        trainBodies.add(trainBody2);
+        trainBodies.add(trainBody3);
+        ArrayList<Integer> trainBodyOrder = new ArrayList<Integer>();
+        for (int i = 0;i<3;i++) {
+            int bodyType = Greenfoot.getRandomNumber(3-i);
+            trainBodyOrder.add(bodyType);
+        }
+    }
+    
     private void spawn () {
         // Chance to spawn a vehicle
         if (Greenfoot.getRandomNumber (laneCount * 10) == 0){
