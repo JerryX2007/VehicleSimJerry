@@ -10,7 +10,8 @@ public abstract class Pedestrian extends SuperSmoothMover
     protected double maxSpeed;
     protected int direction; // direction is always -1 or 1, for moving down or up, respectively
     protected boolean awake, entering;
-    protected GreenfootSound death;
+    protected static GreenfootSound[] deathSounds;
+    protected static int deathSoundsIndex;
 
     /**
      * Act - do whatever the Pedestrian wants to do. This method is called whenever
@@ -23,9 +24,8 @@ public abstract class Pedestrian extends SuperSmoothMover
         awake = true;
         entering = true;
         this.direction = direction;
-        death = new GreenfootSound("death.mp3");
-        death.setVolume(30);
     }
+    
     public void act() {
         if(paused()) {
             delayCount--;
@@ -44,7 +44,26 @@ public abstract class Pedestrian extends SuperSmoothMover
             }
         }
     }
-
+    
+    // Initialize the sounds for pedestrian
+    public static void init() {
+        deathSoundsIndex = 0;
+        deathSounds = new GreenfootSound[10];
+        for (int i=0;i<deathSounds.length;i++) {
+            deathSounds[i] = new GreenfootSound("death.mp3");
+            deathSounds[i].setVolume(30);
+        }
+    }
+    
+    //Code from Mr. Cohen
+    public void playDeathSound() {
+        deathSounds[deathSoundsIndex].play();
+        deathSoundsIndex++;
+        if (deathSoundsIndex >= deathSounds.length){
+            deathSoundsIndex = 0;
+        }
+    }
+    
     /**
      * Method to cause this Pedestrian to become knocked down - stop moving, turn onto side
      */
@@ -52,7 +71,7 @@ public abstract class Pedestrian extends SuperSmoothMover
         speed = 0;
         setRotation (direction * 90);
         awake = false;
-        death.play();
+        playDeathSound();
     }
 
     public void setAwake(boolean state) {

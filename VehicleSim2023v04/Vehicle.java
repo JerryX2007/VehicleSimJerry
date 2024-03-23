@@ -21,6 +21,8 @@ public abstract class Vehicle extends SuperSmoothMover
     protected int honkIndex;
     protected GreenfootSound[] hitPedestrianSounds;
     protected int hitIndex;
+    protected boolean checkedRight;
+    protected boolean checkedLeft;
 
     protected abstract boolean checkHitPedestrian ();
 
@@ -56,8 +58,15 @@ public abstract class Vehicle extends SuperSmoothMover
             honks[i].setVolume(30);
         }
         honkIndex = 0;
+        checkedRight = false;
+        checkedLeft = false;
     }
 
+    public void resetChecks() {
+        checkedLeft = false;
+        checkedRight = false;
+    }
+    
     /**
      * This method is called automatically when the Vehicle is added to the World, and places
      * the Vehicle just off screen (centered 100 pixels beyond the center of the lane spawner)
@@ -130,6 +139,10 @@ public abstract class Vehicle extends SuperSmoothMover
         
         pushAwayFromObjects(actorsTouching, 4);
     }
+    
+    public int getYOffset() {
+        return yOffset;
+    }
 
     /**
      * New repel method! Seems to work well. Can be used in both directions, but for now
@@ -192,38 +205,88 @@ public abstract class Vehicle extends SuperSmoothMover
      */
     public void drive() 
     {
+        int originalLaneNumber = myLaneNumber;
+        Vehicle ahead = (Vehicle) getOneObjectAtOffset (direction * (int)(speed + getImage().getWidth()/2 + 6), 0, Vehicle.class);
+        Vehicle vehicleOnRight = (Vehicle) getOneObjectAtOffset(0, (int)(direction * getImage().getHeight()/2 + (int)(direction * speed)), Vehicle.class);
+        Vehicle vehicleOnLeft = (Vehicle) getOneObjectAtOffset(0, (int)(-1*direction * getImage().getHeight()/2 - (int)(-1*direction * speed)), Vehicle.class);
+        double otherVehicleSpeed = -1;
+        boolean madeLaneChange = true;
         // Ahead is a generic vehicle - we don't know what type BUT
         // since every Vehicle "promises" to have a getSpeed() method,
         // we can call that on any vehicle to find out it's speed
-        Vehicle ahead = (Vehicle) getOneObjectAtOffset (direction * (int)(speed + getImage().getWidth()/2 + 6), 0, Vehicle.class);
-        double otherVehicleSpeed = -1;
+        if(checkedLeft && checkedRight) {
+            resetChecks();
+        }
         if (ahead != null) {
-            if(Greenfoot.getRandomNumber(100) < 50) { //Make 50% chance to honk to avoid too much honking sounds if vehicle is stuck behind another vehicle
-                honks[honkIndex].play();
-                honkIndex++;
-            }
-            if(honkIndex == honks.length) {
+            //Car honks before lane change
+            honks[honkIndex].play();
+            honkIndex++; 
+            if (honkIndex == honks.length){
                 honkIndex = 0;
             }
-            attemptLaneChange();
+            
             otherVehicleSpeed = ahead.getSpeed();
-            if (otherVehicleSpeed >= 0 && otherVehicleSpeed < maxSpeed){ // Vehicle ahead is slower?
-                speed = otherVehicleSpeed;
+            
+            //check if you are on the outer streets
+            if(myLaneNumber == 0) {
+                if(vehicleOnRight == null) {
+                    myLaneNumber++;
+                    setLocation(getX(), getY()+myWorld.getLaneHeight()+myWorld.getSpaceBetweenLanes());
+                    madeLaneChange = true;
+                }
             }
-            else {
-                speed = maxSpeed; // nothing impeding speed, so go max speed
+            else if (myLaneNumber == 5) {
+                if(vehicleOnLeft == null) {
+                    myLaneNumber--;
+                    setLocation(getX(), getY()-myWorld.getLaneHeight()-myWorld.getSpaceBetweenLanes());
+                    madeLaneChange = true;
+                }
+            }
+            
+            //if you are not then check if left or right is clear
+            else if(vehicleOnRight == null && !checkedRight) {
+                myLaneNumber++;
+                setLocation(getX(), getY()+myWorld.getLaneHeight()+myWorld.getSpaceBetweenLanes());
+                madeLaneChange = true;
+            }
+            else if (vehicleOnLeft == null && !checkedLeft) {
+                myLaneNumber--;
+                setLocation(getX(), getY()-myWorld.getLaneHeight()-myWorld.getSpaceBetweenLanes());
+                madeLaneChange = true;
+            }
+            
+            //if you are touching another vehicle go back to your original lane
+            if(originalLaneNumber != myLaneNumber) {
+                if(originalLaneNumber > myLaneNumber && this.isTouching(Vehicle.class)) {
+                    setLocation(getX(), getY()+myWorld.getLaneHeight()+myWorld.getSpaceBetweenLanes());
+                    myLaneNumber = originalLaneNumber;
+                    checkedRight = true;
+                }
+                else if (originalLaneNumber < myLaneNumber && this.isTouching(Vehicle.class)) {
+                    setLocation(getX(), getY()-myWorld.getLaneHeight()-myWorld.getSpaceBetweenLanes());
+                    myLaneNumber = originalLaneNumber;
+                    checkedLeft = true;
+                }
+            }
+            
+            //reset whether you checked the left or right lane if you have already made a lane change
+            if(madeLaneChange) {
+                resetChecks();
             }
         }
+        
+        
         // Various things that may slow down driving speed 
         // You can ADD ELSE IF options to allow other 
         // factors to reduce driving speed.
+
         if (otherVehicleSpeed >= 0 && otherVehicleSpeed < maxSpeed){ // Vehicle ahead is slower?
             speed = otherVehicleSpeed;
         }
         else {
             speed = maxSpeed; // nothing impeding speed, so go max speed
         }
-
+   
         move (speed * direction);
     }   
 
@@ -236,53 +299,18 @@ public abstract class Vehicle extends SuperSmoothMover
             return speed;
         return 0;
     }
+    
+    /**
+     * A setter that can be used to set whether this Vehicle is moving or not.
+     */
     public void setMoving(boolean moving) {
         this.moving = moving;
     }
+    
+    /**
+     * A setter that can be used to set the speed of this Vehicle.
+     */
     public void setSpeed(double spd){
         speed = spd;
-    }
-    public boolean attemptLaneChange() {
-        boolean toReturn = false;
-        int originalLaneNumber = myLaneNumber;
-        Vehicle vehicleOnRight = (Vehicle) getOneObjectAtOffset(0, (int)(direction * getImage().getHeight()/2 + (int)(direction * speed)), Vehicle.class);
-        Vehicle vehicleOnLeft = (Vehicle) getOneObjectAtOffset(0, (int)(-1*direction * getImage().getHeight()/2 - (int)(-1*direction * speed)), Vehicle.class);
-        if(myLaneNumber == 0) {
-            if(vehicleOnRight == null) {
-                myLaneNumber++;
-                setLocation(getX(), getY()+myWorld.getLaneHeight()+myWorld.getSpaceBetweenLanes());
-                toReturn = true;
-            }
-        }
-        else if (myLaneNumber == 4) {
-            if(vehicleOnLeft == null) {
-                myLaneNumber--;
-                setLocation(getX(), getY()-myWorld.getLaneHeight()-myWorld.getSpaceBetweenLanes());
-                toReturn = true;
-            }
-        }
-        else if(vehicleOnRight == null) {
-            myLaneNumber++;
-            setLocation(getX(), getY()+myWorld.getLaneHeight()+myWorld.getSpaceBetweenLanes());
-            toReturn = true;
-        }
-        else if (vehicleOnLeft == null) {
-            myLaneNumber--;
-            setLocation(getX(), getY()-myWorld.getLaneHeight()-myWorld.getSpaceBetweenLanes());
-            toReturn = true;
-        }
-        if(originalLaneNumber != myLaneNumber) {
-            if(originalLaneNumber > myLaneNumber && this.isTouching(Vehicle.class)) {
-                setLocation(getX(), getY()+myWorld.getLaneHeight()+myWorld.getSpaceBetweenLanes());
-                myLaneNumber = originalLaneNumber;
-                toReturn = false;
-            }
-            else if (originalLaneNumber < myLaneNumber && this.isTouching(Vehicle.class)) {
-                setLocation(getX(), getY()-myWorld.getLaneHeight()-myWorld.getSpaceBetweenLanes());
-                myLaneNumber = originalLaneNumber;
-                toReturn = false;
-            }
-        }
-        return toReturn;
     }
 }

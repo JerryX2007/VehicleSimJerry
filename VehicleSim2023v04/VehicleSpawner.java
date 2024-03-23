@@ -40,7 +40,7 @@ public class VehicleSpawner extends Actor
         Font laneFont = new Font ("Courier New", true, false, (int)(height* 0.8));
         // set this to true (in World) to see the Spawners to help understand how it works,
         // and then false to hidethem at the end to make your project look clean.
-        visible = false;
+        visible = true;
         speedModifier = 1.0; // 100%, unless changed elsewhere
         image = new GreenfootImage (width, height);
         // If visible, fill this image with red to show its size, and mark the 
@@ -96,6 +96,10 @@ public class VehicleSpawner extends Actor
 
     public boolean isTouchingVehicle () {
         return this.isTouching(Vehicle.class);
+    }
+    
+    public boolean isTouchingTrain () {
+        return this.isTouching(Train.class);
     }
 
     /**

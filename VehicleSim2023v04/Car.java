@@ -22,16 +22,16 @@ public class Car extends Vehicle
         super.act();
 
     }
-
+    
     /**
      * When a Car hit's a Pedestrian, it should knock it over
      */
     public boolean checkHitPedestrian () {
         Pedestrian pedestrianInFront = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, 0, Pedestrian.class);
-        Pedestrian pedestrianOnLeft = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, getImage().getHeight()/2+6, Pedestrian.class);
-        Pedestrian pedestrianOnRight = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, -1*getImage().getHeight()/2-6, Pedestrian.class);
+        Pedestrian pedestrianOnLeft = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, getImage().getHeight()/2-6, Pedestrian.class);
+        Pedestrian pedestrianOnRight = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, -1*getImage().getHeight()/2+6, Pedestrian.class);
         if(pedestrianInFront != null) {
-            if(pedestrianInFront instanceof Adult) {
+            if(pedestrianInFront instanceof Adult && pedestrianInFront.isAwake()) {
                 pedestrianInFront.knockDown();
                 return true;
             }
@@ -42,7 +42,7 @@ public class Car extends Vehicle
             }
         }
         if(pedestrianOnLeft != null) {
-            if(pedestrianOnLeft instanceof Adult) {
+            if(pedestrianOnLeft instanceof Adult && pedestrianOnLeft.isAwake()) {
                 pedestrianOnLeft.knockDown();
                 return true;
             }
@@ -53,7 +53,7 @@ public class Car extends Vehicle
             }
         }
         if(pedestrianOnRight != null) {
-            if(pedestrianOnRight instanceof Adult) {
+            if(pedestrianOnRight instanceof Adult && pedestrianOnRight.isAwake()) {
                 pedestrianOnRight.knockDown();
                 return true;
             }

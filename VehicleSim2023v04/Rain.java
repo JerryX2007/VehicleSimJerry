@@ -10,28 +10,23 @@ import java.util.ArrayList;
 public class Rain extends Effect
 {
     private int actsLeft, turnAroundAct;
-    private double speed;
+    private int speed;
+    private int count;
     private int direction;
     private boolean turned;
-    private double brakeForceNeeded;
-
+    private boolean stop;
     private GreenfootSound windSound;
 
     public Rain () {
-        image = new GreenfootImage("rain.png");
-        setImage (image);
         actsLeft = 300;
-
-        turned = false;
-
-        turnAroundAct = (actsLeft / 2) + (Greenfoot.getRandomNumber(60) - 30);
-        speed = 3.0;
-        direction = 1;
+        speed = 3;
     }
 
     public void addedToWorld (World w){
-        setLocation (w.getWidth()/2, w.getHeight()/2);
-        
+        if (image == null) {
+            image = drawRain(getWorld().getWidth(), getWorld().getHeight()*10, 55);
+        }
+        setImage(image);
     }
 
     /**
@@ -41,11 +36,14 @@ public class Rain extends Effect
     public void act()
     {
         if (this != null && getWorld() != null) { // Check if the object and its world are still valid
+            if(actsLeft <= 60) {
+                fade(actsLeft, 60);
+            }
             actsLeft--;
-            fade(actsLeft, 120);
-    
-            applyMove();
-            
+            setLocation(getX(), getY()+speed);
+            if(actsLeft <= 400) {
+                rainPedsEffect();
+            }
             if (actsLeft == 0){
                 getWorld().removeObject(this);
                 return;
@@ -64,23 +62,90 @@ public class Rain extends Effect
         }
     }
 
-    private void applyMove(){
-        int speedChange = Greenfoot.getRandomNumber(20);
-        if (actsLeft == turnAroundAct){
-            direction *= -1;
-            speed = 1.0;
+    public void rainPedsEffect() {
+        ArrayList<Pedestrian> peds = (ArrayList<Pedestrian>) getWorld().getObjects(Pedestrian.class);
+        for (Pedestrian p : peds) {
+            if (!p.isAwake()) {
+                if (!stop) {
+                    p.setLocation(p.getX(), p.getY() + 2);
+                    count = 0;
+                }
+                if (stop) {
+                    if (count < 10) {
+                        count++;
+                    }
+
+                    if (count >= 1) {
+                        stop = false;
+                    }
+                }   
+            }
         }
-        else if (actsLeft - turnAroundAct == 30){
-            brakeForceNeeded = speed / 30;
-        }
-        else if (actsLeft - turnAroundAct < 30 && actsLeft - turnAroundAct > 0){
-            speed = Math.max(0, speed -brakeForceNeeded);
-        }      
-        else  if (speedChange > 15){
-            speed += speedChange / 100.0;
+    }
+    
+    public static GreenfootImage drawRain (int width, int height, int density){
+
+        Color[] swatch = new Color [32];
+        Color[] lighterSwatch = new Color [32];
+
+        int green = 140;
+
+        // Build a color pallete out of shades of near-white yellow and near-white blue      
+        for (int i = 0; i < swatch.length; i++){ // first half blue tones
+            swatch[i] = new Color (12, green, 199);
+            if (i%2 == 0) {
+                green += 2;
+            }
+            else {
+                green -= 2;
+            }
+            lighterSwatch[i] = new Color(42, green+30, 229);
         }
 
-        setLocation (getX(), getY()- ((int)speed*direction));
+        // The temporary image, my canvas for drawing
+        GreenfootImage temp = new GreenfootImage (width, height);
+
+        // Run this loop one time per "density"
+        for (int i = 0; i < density; i++){
+            //swatch
+            for (int j = 0; j < 100; j++){ // draw 100 circles
+                int randSize;
+                // Choose a random colour from my swatch, and set its tranparency randomly
+                int randColor = Greenfoot.getRandomNumber(swatch.length);
+                //int randTrans = Greenfoot.getRandomNumber(220) + 35; // around half transparent
+                temp.setColor (swatch[randColor]);
+
+                //setTransparency(randTrans);
+                // random locations for our dot
+                int randX = Greenfoot.getRandomNumber (width);
+                int randY = Greenfoot.getRandomNumber (height);
+
+                int tempVal = Greenfoot.getRandomNumber(250);
+                int randHeight = Greenfoot.getRandomNumber(10)+5;
+                temp.drawRect (randX, randY, 1, randHeight);
+                temp.drawRect (randX, randY+4, 1, randHeight-3);
+            }
+            //lighterSwatch
+            for (int j = 0; j < 100; j++){ // draw 100 circles
+                int randSize;
+                // Choose a random colour from my swatch, and set its tranparency randomly
+                int randColor = Greenfoot.getRandomNumber(lighterSwatch.length);
+                //int randTrans = Greenfoot.getRandomNumber(220) + 35; // around half transparent
+                temp.setColor (lighterSwatch[randColor]);
+
+                //setTransparency(randTrans);
+                // random locations for our dot
+                int randX = Greenfoot.getRandomNumber (width);
+                int randY = Greenfoot.getRandomNumber (height);
+
+                int tempVal = Greenfoot.getRandomNumber(250);
+                int randHeight = Greenfoot.getRandomNumber(20)+5;
+                temp.drawRect (randX, randY, 1, randHeight);
+                temp.drawRect (randX, randY+4, 1, randHeight-3);
+            }
+        }
+
+        return temp;
     }
 
 }

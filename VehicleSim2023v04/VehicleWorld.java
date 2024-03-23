@@ -55,7 +55,12 @@ public class VehicleWorld extends World
     // Sound variables
     private GreenfootSound dayAmbience;
     private GreenfootSound nightAmbience;
-
+    
+    private static VehicleSpawner trainSpawner;
+    private int trainCount;
+    private boolean waitingForTrain;
+    private boolean spawnedHead;
+    private int currentTrains;
     /**
      * Constructor for objects of class MyWorld.
      * 
@@ -82,7 +87,7 @@ public class VehicleWorld extends World
         background = new GreenfootImage("day.png");
         setBackground (background);
         // Set critical variables - will affect lane drawing
-        laneCount = 5;
+        laneCount = 6;
         laneHeight = 48;
         spaceBetweenLanes = 6;
         splitAtCenter = false;
@@ -92,19 +97,26 @@ public class VehicleWorld extends World
         laneSpawners = new VehicleSpawner[laneCount];
 
         // Prepare lanes method - draws the lanes
-        lanePositionsY = prepareLanes (this, background, laneSpawners, 360, laneHeight, laneCount, spaceBetweenLanes, twoWayTraffic, splitAtCenter);
-
-        laneSpawners[0].setSpeedModifier(0.8);
-        laneSpawners[3].setSpeedModifier(1.4);
+        lanePositionsY = prepareLanes (this, background, laneSpawners, 300, laneHeight, laneCount, spaceBetweenLanes, twoWayTraffic, splitAtCenter);
 
         setBackground (background);
         
+        trainCount = 0;
+        waitingForTrain = false;
+        spawnedHead = false;
+        currentTrains = 0;
+        
         actCount = 1;
         dayAmbience = new GreenfootSound("cityAmbience.mp3");
-        dayAmbience.setVolume(50);
+        dayAmbience.setVolume(40);
         nightAmbience = new GreenfootSound("nightAmbience.mp3");
-        nightAmbience.setVolume(50);
+        nightAmbience.setVolume(25);
+        Ambulance.init();
+        Pedestrian.init();
+        Van.init();
+        Train.init();
     }
+    
     public void started(){
         if(!isNight){
             dayAmbience.playLoop();
@@ -119,13 +131,14 @@ public class VehicleWorld extends World
         dayAmbience.stop();
         nightAmbience.stop();
     }
+    
     public void effect () {
         if (counter < acts) {
             counter++;
         }
         else {
             background = DayNightCycle.currentBackground(isNight);
-            prepareLanes (this, background, laneSpawners, 360, laneHeight, laneCount, spaceBetweenLanes, twoWayTraffic, splitAtCenter);
+            prepareLanes (this, background, laneSpawners, 300, laneHeight, laneCount, spaceBetweenLanes, twoWayTraffic, splitAtCenter);
             setBackground (background);
             if(isNight) {
                 isNight = false;
@@ -142,14 +155,52 @@ public class VehicleWorld extends World
         if (actCount % 600 == 0){
             addObject(new Rain(), getWidth()/2, getHeight()/2);
         }
+        if(actCount % 1200 == 0) {
+            Train.trainApproaching();
+            waitingForTrain = true;
+        }
     }
     public void act () {
         spawn();
         zSort ((ArrayList<Actor>)(getObjects(Actor.class)), this);
         effect();
         actCount++;
+        if(waitingForTrain) {
+            trainCount++;
+            spawnTrain();
+            System.out.println("waited for train" + trainCount);
+        }
+        else {
+            trainCount = 0;
+        }
     }
-
+    
+    
+    private void spawnTrain() {
+        if(!spawnedHead) {
+            addObject(new Head(), 0, 190);
+            spawnedHead = true;
+            currentTrains++;
+        }
+        TrainBody1 trainBody1 = new TrainBody1();
+        TrainBody2 trainBody2 = new TrainBody2();
+        TrainBody3 trainBody3 = new TrainBody3();
+        ArrayList<Train> trainBodies = new ArrayList<Train>();
+        trainBodies.add(trainBody1);
+        trainBodies.add(trainBody2);
+        trainBodies.add(trainBody3);
+        ArrayList<Integer> trainBodyOrder = new ArrayList<Integer>();
+        for (int i = 0;i<3;i++) {
+            int bodyType = Greenfoot.getRandomNumber(3-i);
+            trainBodyOrder.add(bodyType);
+        }
+        if(!trainSpawner.isTouchingTrain() && currentTrains <= 4) {
+            if(trainCount >= 65) {
+                currentTrains++;
+                addObject(trainBodies.get(currentTrains-2), 0, 190);
+            }
+        }
+    }
     private void spawn () {
         // Chance to spawn a vehicle
         if (Greenfoot.getRandomNumber (laneCount * 10) == 0){
@@ -189,7 +240,8 @@ public class VehicleWorld extends World
                 }
             }
         }
-
+        
+        
     }
 
     /**
@@ -206,7 +258,11 @@ public class VehicleWorld extends World
         } 
         return -1;
     }
-
+    
+    public int getLaneCount(){
+        return laneCount;
+    }
+    
     /**
      * Given a y-position, return the lane number (zero-indexed).
      * Note that the y-position must be valid, and you should 
@@ -311,7 +367,9 @@ public class VehicleWorld extends World
         // draws bottom border
         target.setColor (GREY_BORDER);
         target.fillRect (0, lanePositions[lanes-1] + heightOffset, target.getWidth(), spacing);
-
+        
+        trainSpawner = new VehicleSpawner(true, heightPerLane, 10);
+        world.addObject(trainSpawner, 0, 180);
         return lanePositions;
     }
 

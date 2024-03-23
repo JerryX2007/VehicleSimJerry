@@ -51,7 +51,9 @@ public class Explosion extends Gif
         }
         ArrayList<Pedestrian> peds = (ArrayList<Pedestrian>)getIntersectingObjects(Pedestrian.class);
         for (Pedestrian p : peds){
-            p.knockDown();
+            if(p.isAwake()) {
+                p.knockDown();
+            }
         }
     }
 }

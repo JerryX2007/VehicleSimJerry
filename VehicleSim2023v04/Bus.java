@@ -15,7 +15,7 @@ public class Bus extends Vehicle
         speed = maxSpeed;
         lastSpeed = speed;
         // because the Bus graphic is tall, offset it a up (this may result in some collision check issues)
-        yOffset = 6;
+        yOffset = 4;
     }
 
     /**
@@ -56,6 +56,7 @@ public class Bus extends Vehicle
         if(pp != null && pp.isAwake()) {
             pp.setAwake(false);
             setMoving(false);
+            speed = 0;
             setDelay(60);
             getWorld().removeObject(pp);
             return true;
@@ -63,6 +64,7 @@ public class Bus extends Vehicle
         if(ppp != null && ppp.isAwake()) {
             ppp.setAwake(false);
             setMoving(false);
+            speed = 0;
             setDelay(60);
             getWorld().removeObject(ppp);
             return true;
