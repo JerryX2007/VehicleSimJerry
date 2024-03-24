@@ -1,11 +1,11 @@
 #BlueJ class context
 comment0.target=Explosion
-comment0.text=\r\n\ IMAGE\ FROM\:\ https\://tenor.com/en-CA/view/nuclear-explosion-starcraft-remastered-terran-boom-nuclear-missile-gif-20426251\r\n
+comment0.text=\n\ IMAGE\ FROM\:\ https\://tenor.com/en-CA/view/nuclear-explosion-starcraft-remastered-terran-boom-nuclear-missile-gif-20426251\n
 comment1.params=time\ width\ height\ image
 comment1.target=Explosion(int,\ int,\ int,\ GifImage)
 comment2.params=time\ width\ height
 comment2.target=Explosion(int,\ int,\ int)
 comment3.params=
 comment3.target=void\ act()
-comment3.text=\r\n\ Act\ -\ do\ whatever\ the\ Explosion\ wants\ to\ do.\ This\ method\ is\ called\ whenever\r\n\ the\ 'Act'\ or\ 'Run'\ button\ gets\ pressed\ in\ the\ environment.\r\n
+comment3.text=\n\ Act\ -\ do\ whatever\ the\ Explosion\ wants\ to\ do.\ This\ method\ is\ called\ whenever\n\ the\ 'Act'\ or\ 'Run'\ button\ gets\ pressed\ in\ the\ environment.\n
 numComments=4

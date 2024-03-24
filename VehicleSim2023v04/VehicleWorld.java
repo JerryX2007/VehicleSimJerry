@@ -61,6 +61,7 @@ public class VehicleWorld extends World
     private boolean waitingForTrain;
     private boolean spawnedHead;
     private int currentTrains;
+    private ArrayList<Train> trainToSpawn;
     /**
      * Constructor for objects of class MyWorld.
      * 
@@ -103,8 +104,8 @@ public class VehicleWorld extends World
         
         trainCount = 0;
         waitingForTrain = false;
-        spawnedHead = false;
         currentTrains = 0;
+        trainToSpawn = new ArrayList<Train>();
         
         actCount = 1;
         dayAmbience = new GreenfootSound("cityAmbience.mp3");
@@ -155,9 +156,21 @@ public class VehicleWorld extends World
         if (actCount % 600 == 0){
             addObject(new Rain(), getWidth()/2, getHeight()/2);
         }
-        if(actCount % 1200 == 0) {
+        if(actCount % 3600 == 0) {
             Train.trainApproaching();
             waitingForTrain = true;
+            Head trainHead = new Head();
+            TrainBody trainBody1 = new TrainBody(false);
+            TrainBody trainBody2 = new TrainBody(false);
+            TrainBody trainBody3 = new TrainBody(true);
+            TrainBody trainBody4 = new TrainBody(false);
+            TrainBody trainBody5 = new TrainBody(false);
+            trainToSpawn.add(trainHead);
+            trainToSpawn.add(trainBody1);
+            trainToSpawn.add(trainBody2);
+            trainToSpawn.add(trainBody3);
+            trainToSpawn.add(trainBody4);
+            trainToSpawn.add(trainBody5);
         }
     }
     public void act () {
@@ -167,63 +180,23 @@ public class VehicleWorld extends World
         actCount++;
         if(waitingForTrain) {
             trainCount++;
-            spawnTrain();
-            //System.out.println("waited for train" + trainCount);
-        }
-    }
-    
-    
-    private void spawnTrain() {
-        if(!spawnedHead) {
-            addObject(new Head(), 0, 190);
-            spawnedHead = true;
-            currentTrains++;
-        }
-        TrainBody1 trainBody1 = new TrainBody1();
-        TrainBody2 trainBody2 = new TrainBody2();
-        TrainBody3 trainBody3 = new TrainBody3();
-        ArrayList<Train> trainBodies = new ArrayList<Train>();
-        trainBodies.add(trainBody1);
-        trainBodies.add(trainBody2);
-        trainBodies.add(trainBody3);
-        ArrayList<Integer> trainBodyOrder = new ArrayList<Integer>();
-        for (int i = 0;i<3;i++) {
-            int bodyType = Greenfoot.getRandomNumber(3-i);
-            trainBodyOrder.add(bodyType);
-        }
-        System.out.println(trainBodyOrder);
-        System.out.println(trainBodies);
-        if(!trainSpawner.isTouchingTrain() && trainBodies != null) {
-            if(trainCount >= 65) {
-                currentTrains++;
-                addObject(trainBodies.get(currentTrains-2), 0, 190);
-                trainBodies.remove(currentTrains);
-                trainCount = 0;
+            if(!trainSpawner.isTouchingTrain() && currentTrains != 6) {
+                if(trainCount >= 65) {
+                    if(trainToSpawn.get(0) instanceof Head) {
+                        addObject(trainToSpawn.get(0), 20, 190);
+                    }
+                    else {
+                        addObject(trainToSpawn.get(0), 0, 190);
+                    }
+                    trainToSpawn.remove(0);
+                    trainCount = 0;
+                    currentTrains++;
+                }
             }
-        }
-        if(currentTrains == 4) {
-            waitingForTrain = false;
-            currentTrains = 0;
-        }
-    }
-    
-    private void prepareTrains() {
-        if(!spawnedHead) {
-            addObject(new Head(), 0, 190);
-            spawnedHead = true;
-            currentTrains++;
-        }
-        TrainBody1 trainBody1 = new TrainBody1();
-        TrainBody2 trainBody2 = new TrainBody2();
-        TrainBody3 trainBody3 = new TrainBody3();
-        ArrayList<Train> trainBodies = new ArrayList<Train>();
-        trainBodies.add(trainBody1);
-        trainBodies.add(trainBody2);
-        trainBodies.add(trainBody3);
-        ArrayList<Integer> trainBodyOrder = new ArrayList<Integer>();
-        for (int i = 0;i<3;i++) {
-            int bodyType = Greenfoot.getRandomNumber(3-i);
-            trainBodyOrder.add(bodyType);
+            else if(currentTrains >= 6) {
+                waitingForTrain = false;
+                currentTrains = 0;
+            }
         }
     }
     

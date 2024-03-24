@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=TrainBody
+comment0.text=\n\ Write\ a\ description\ of\ class\ TrainBody\ here.\n\ \n\ @author\ (your\ name)\ \n\ @version\ (a\ version\ number\ or\ a\ date)\n
+comment1.params=middleTrain
+comment1.target=TrainBody(boolean)
+comment2.params=
+comment2.target=void\ act()
+comment2.text=\n\ Act\ -\ do\ whatever\ the\ TrainBody\ wants\ to\ do.\ This\ method\ is\ called\ whenever\n\ the\ 'Act'\ or\ 'Run'\ button\ gets\ pressed\ in\ the\ environment.\n
+comment3.params=
+comment3.target=void\ randomizeImage()
+comment4.params=alreadyReachedBefore
+comment4.target=boolean\ reachedMiddleOfWorld(boolean)
+numComments=5
