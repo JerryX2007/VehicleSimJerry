@@ -1,10 +1,7 @@
 import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 
 /**
- * Adult is a type of pedestrian. Their goal is to cross the road or to assist a child being targetted by a robber.
- * 
- * @author Jerry Xing
- * @version 1.0
+ * Baby is a type of Pedestrian. They will usually explode when run over or get kidnapped. Their goal is to cross the street.
  */
 public class Baby extends Pedestrian
 {

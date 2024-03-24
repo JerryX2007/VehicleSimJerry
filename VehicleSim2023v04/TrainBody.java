@@ -1,10 +1,7 @@
 import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 
 /**
- * Write a description of class TrainBody here.
- * 
- * @author (your name) 
- * @version (a version number or a date)
+ * The TrainBody subclass
  */
 public class TrainBody extends Train
 {
@@ -41,6 +38,9 @@ public class TrainBody extends Train
         }
     }
     
+    /**
+     * Method to randonmize the image of the TrainBody to one of three different presets
+     */
     public void randomizeImage() {
         int image = Greenfoot.getRandomNumber(3);
         if(image == 0) {
@@ -54,6 +54,9 @@ public class TrainBody extends Train
         }
     }
     
+    /**
+     * Method to check whether the Train has reached the "middle" of the world
+     */
     public boolean reachedMiddleOfWorld(boolean alreadyReachedBefore) {
         if(!alreadyReachedBefore) {
             if(getX() == getWorld().getWidth()/2-100) {

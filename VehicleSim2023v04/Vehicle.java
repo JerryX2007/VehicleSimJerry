@@ -62,6 +62,9 @@ public abstract class Vehicle extends SuperSmoothMover
         checkedLeft = false;
     }
 
+    /**
+     * Setter method that resets the states of the checkedLeft and checkedRight variables
+     */
     public void resetChecks() {
         checkedLeft = false;
         checkedRight = false;
@@ -140,6 +143,9 @@ public abstract class Vehicle extends SuperSmoothMover
         pushAwayFromObjects(actorsTouching, 4);
     }
     
+    /**
+     * Getter method that gets the yOffset of the Vehicle
+     */
     public int getYOffset() {
         return yOffset;
     }
@@ -195,7 +201,10 @@ public abstract class Vehicle extends SuperSmoothMover
             }
         }
     }
-
+    
+    /**
+     * Setter method to increase the speed of the Vehicle
+     */
     public void increaseSpeed (double delta){
         maxSpeed += delta;
     }
@@ -226,7 +235,7 @@ public abstract class Vehicle extends SuperSmoothMover
             }
             
             otherVehicleSpeed = ahead.getSpeed();
-            
+            //LANE CHANGE ALGORITHM
             //check if you are on the outer streets
             if(myLaneNumber == 0) {
                 if(vehicleOnRight == null) {
@@ -275,11 +284,6 @@ public abstract class Vehicle extends SuperSmoothMover
             }
         }
         
-        
-        // Various things that may slow down driving speed 
-        // You can ADD ELSE IF options to allow other 
-        // factors to reduce driving speed.
-
         if (otherVehicleSpeed >= 0 && otherVehicleSpeed < maxSpeed){ // Vehicle ahead is slower?
             speed = otherVehicleSpeed;
         }

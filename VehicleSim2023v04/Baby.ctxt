@@ -1,9 +1,9 @@
 #BlueJ class context
 comment0.target=Baby
-comment0.text=\n\ Adult\ is\ a\ type\ of\ pedestrian.\ Their\ goal\ is\ to\ cross\ the\ road\ or\ to\ assist\ a\ child\ being\ targetted\ by\ a\ robber.\n\ \n\ @author\ Jerry\ Xing\n\ @version\ 1.0\n
+comment0.text=\r\n\ Baby\ is\ a\ type\ of\ Pedestrian.\ They\ will\ usually\ explode\ when\ run\ over\ or\ get\ kidnapped.\ Their\ goal\ is\ to\ cross\ the\ street.\r\n
 comment1.params=direction
 comment1.target=Baby(int)
 comment2.params=
 comment2.target=void\ act()
-comment2.text=\n\ Act\ -\ do\ whatever\ the\ Adult\ wants\ to\ do.\ This\ method\ is\ called\ whenever\n\ the\ 'Act'\ or\ 'Run'\ button\ gets\ pressed\ in\ the\ environment.\n
+comment2.text=\r\n\ Act\ -\ do\ whatever\ the\ Adult\ wants\ to\ do.\ This\ method\ is\ called\ whenever\r\n\ the\ 'Act'\ or\ 'Run'\ button\ gets\ pressed\ in\ the\ environment.\r\n
 numComments=3

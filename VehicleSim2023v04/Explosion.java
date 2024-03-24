@@ -41,14 +41,16 @@ public class Explosion extends Gif
     public void act(){
         setImage(image.getCurrentImage());
         timeCounter++;
-        if(timeCounter >= time){
+        if(timeCounter >= time){ //Remove the Explosion when it has finished
             getWorld().removeObject(this);
             return;
         }
+        //Remove Vehicles from the world that have come into contact with the Explosion
         ArrayList<Vehicle> vehicles = (ArrayList<Vehicle>)getIntersectingObjects(Vehicle.class);
         for (Vehicle v : vehicles){
             getWorld().removeObject(v);
         }
+        //Knock down Pedestrians that have come into contact with the Explosion
         ArrayList<Pedestrian> peds = (ArrayList<Pedestrian>)getIntersectingObjects(Pedestrian.class);
         for (Pedestrian p : peds){
             if(p.isAwake()) {

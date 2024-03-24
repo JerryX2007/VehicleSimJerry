@@ -2,28 +2,31 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 import java.util.Collections;
 import java.util.ArrayList;
 /**
- * <h1>The new and vastly improved 2022 Vehicle Simulation Assignment.</h1>
- * <p> This is the first redo of the 8 year old project. Lanes are now drawn dynamically, allowing for
- *     much greater customization. Pedestrians can now move in two directions. The graphics are better
- *     and the interactions smoother.</p>
- * <p> The Pedestrians are not as dumb as befor\e (they don't want straight into Vehicles) and the Vehicles
- *     do a somewhat better job detecting Pedestrians.</p>
+ * Features:
+ * This world is set in an Urban environment, with Pedestrians and Babies trying to avoid the Vehicles when crossing the road.
+ * Whenever a Car runs over an Adult, the Adult gets knocked over and a death sound effect is played.
+ * Whenever a Pedestrian gets knocked over, a death sound effect is played.
+ * I used external images instead of the default images given to me by Mr. Cohen.
+ * There are two global effects. One is a day night cycle which changes the background of the simulation. The other is a rain effect, which washes away dead bodies
+ * During the night, a night ambience sound is played. When it is raining, a raining ambience sound is played.
+ * During the day, a street ambience sound is played, accompanied by the sounds of the Vehicles.
+ * When a car is spawned, it creates a revving sound, as it is a lamborghini.
+ * When an ambulance revives a dead body, a revive sound will be played.
+ * There is a honking sound effect for when any Vehicle needs to perform a lane change.
+ * I have added some local effects:
+ * When the Van detects a collision with a Baby, if it does not already contain a Baby, it will kidnap the Baby.
+ * A speed up sound effect will then play along with a baby cry sound effect.
+ * If the Van already has a baby, an explosion will occur with an explosion sound effect. Even if the Baby is knocked down, an explosion will still occur as the baby is explosive.
+ * if a Vehicle is touching the explosion, it will be removed from the world. If a Pedestrian is touching the explosion it will get knocked down.
+ * If the Van collides with an Adult, the Adult will be knocked down.
+ * If a Pedestrian touches a bus, it will be "picked up" by the bus and a beeping sound effect will be played.
+ * I added a Train, where it spawns every 2400 acts. It plays a whistle sound whenever it spawns and begins to leave. It also plays a train track sound when doing so.
+ * If the Train clips or runs over an Adult or Baby, the Adult will get knocked over and the Baby will explode. The Train is not affected by the explosion as it is strong.
  * 
- * Version Notes - Feb 2023
- * --> Includes grid <--> lane conversion method
- * --> Now starts with 1-way, 5 lane setup (easier)
  * 
- * V2023_021
- * --> Improved Vehicle Repel (still work in progress)
- * --> Implemented Z-sort, disabled paint order between Pedestrians and Vehicles (looks much better now)
- * --> Implemented lane-based speed modifiers for max speed
- * 
- * V2023_04
- * --> Repel has been re-imagined and now takes the sizes of Actors into consideration better, and also only
- *     moves Actors verically. (The code to move in both dimensions is there and works but it's commented out
- *     because this is the effect I was going for).
- * --> TODO -- Improve flow to avoid Removed From World errors when a Vehicle calls super.act() and is removed there.
- * 
+ * Potential Bugs:
+ * The ambulance and bus yOffset is not accurate so a lane change will not be performed
+ * Sometimes a greenfoot icon pops up during an explosion
  */
 public class VehicleWorld extends World
 {
@@ -33,11 +36,9 @@ public class VehicleWorld extends World
     public static Color GREY_BORDER = new Color (108, 108, 108);
     public static Color GREY_STREET = new Color (88, 88, 88);
     public static Color YELLOW_LINE = new Color (255, 216, 0);
-
-    public static boolean SHOW_SPAWNERS = true;
     
     // Set Y Positions for Pedestrians to spawn
-    public static final int TOP_SPAWN = 200; // Pedestrians who spawn on top
+    public static final int TOP_SPAWN = 50; // Pedestrians who spawn on top
     public static final int BOTTOM_SPAWN = 705; // Pedestrians who spawn on the bottom
 
     // Variables for the day/night cycle
@@ -56,10 +57,10 @@ public class VehicleWorld extends World
     private GreenfootSound dayAmbience;
     private GreenfootSound nightAmbience;
     
+    // Train variables
     private static VehicleSpawner trainSpawner;
     private int trainCount;
     private boolean waitingForTrain;
-    private boolean spawnedHead;
     private int currentTrains;
     private ArrayList<Train> trainToSpawn;
     /**
@@ -102,6 +103,7 @@ public class VehicleWorld extends World
 
         setBackground (background);
         
+        
         trainCount = 0;
         waitingForTrain = false;
         currentTrains = 0;
@@ -112,13 +114,17 @@ public class VehicleWorld extends World
         dayAmbience.setVolume(40);
         nightAmbience = new GreenfootSound("nightAmbience.mp3");
         nightAmbience.setVolume(25);
+        
+        //Initialize the sounds for all the classes
         Ambulance.init();
         Pedestrian.init();
         Van.init();
         Train.init();
+        Car.init();
+        Bus.init();
     }
     
-    public void started(){
+    public void started(){ //Start the respective ambience sound when the world is started
         if(!isNight){
             dayAmbience.playLoop();
         }
@@ -128,7 +134,7 @@ public class VehicleWorld extends World
         
     }
     
-    public void stopped(){
+    public void stopped(){ //Stop the respective ambience sound when the world is paused
         dayAmbience.stop();
         nightAmbience.stop();
     }
@@ -138,7 +144,7 @@ public class VehicleWorld extends World
             counter++;
         }
         else {
-            background = DayNightCycle.currentBackground(isNight);
+            background = DayNightCycle.currentBackground(isNight); //Change between day and night
             prepareLanes (this, background, laneSpawners, 300, laneHeight, laneCount, spaceBetweenLanes, twoWayTraffic, splitAtCenter);
             setBackground (background);
             if(isNight) {
@@ -153,24 +159,20 @@ public class VehicleWorld extends World
             }
             counter = 0;
         }
-        if (actCount % 600 == 0){
+        //Start the Rain effect
+        if (actCount % 900 == 0){
             addObject(new Rain(), getWidth()/2, getHeight()/2);
         }
-        if(actCount % 3600 == 0) {
+        //Spawn a Train
+        if(actCount % 2400 == 0) {
             Train.trainApproaching();
             waitingForTrain = true;
-            Head trainHead = new Head();
-            TrainBody trainBody1 = new TrainBody(false);
-            TrainBody trainBody2 = new TrainBody(false);
-            TrainBody trainBody3 = new TrainBody(true);
-            TrainBody trainBody4 = new TrainBody(false);
-            TrainBody trainBody5 = new TrainBody(false);
-            trainToSpawn.add(trainHead);
-            trainToSpawn.add(trainBody1);
-            trainToSpawn.add(trainBody2);
-            trainToSpawn.add(trainBody3);
-            trainToSpawn.add(trainBody4);
-            trainToSpawn.add(trainBody5);
+            trainToSpawn.add(new Head());
+            trainToSpawn.add(new TrainBody(false));
+            trainToSpawn.add(new TrainBody(false));
+            trainToSpawn.add(new TrainBody(true)); //Spawns the middle train cart
+            trainToSpawn.add(new TrainBody(false));
+            trainToSpawn.add(new TrainBody(false));
         }
     }
     public void act () {
@@ -178,12 +180,12 @@ public class VehicleWorld extends World
         zSort ((ArrayList<Actor>)(getObjects(Actor.class)), this);
         effect();
         actCount++;
-        if(waitingForTrain) {
+        if(waitingForTrain) { //If currently waiting for a train, it will start to spawn the train
             trainCount++;
             if(!trainSpawner.isTouchingTrain() && currentTrains != 6) {
-                if(trainCount >= 65) {
+                if(trainCount >= 60) {
                     if(trainToSpawn.get(0) instanceof Head) {
-                        addObject(trainToSpawn.get(0), 20, 190);
+                        addObject(trainToSpawn.get(0), 35, 190); //Give the head a different offset because the width is different
                     }
                     else {
                         addObject(trainToSpawn.get(0), 0, 190);
@@ -260,6 +262,10 @@ public class VehicleWorld extends World
     
     public int getLaneCount(){
         return laneCount;
+    }
+    
+    public boolean isWaitingForTrain() {
+        return waitingForTrain;
     }
     
     /**

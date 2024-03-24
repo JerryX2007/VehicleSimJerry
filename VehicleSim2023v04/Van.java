@@ -1,7 +1,7 @@
 import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 
 /**
- * The Car subclass
+ * The Van subclass
  */
 public class Van extends Vehicle
 {
@@ -14,7 +14,7 @@ public class Van extends Vehicle
         super(origin); // call the superclass' constructor
         maxSpeed = 1.0 + ((Math.random() * 30)/5);
         speed = maxSpeed;
-        yOffset = 8;
+        yOffset = 4;
         int z;
         followingDistance = 6;
         isContainingBaby = false;
@@ -27,19 +27,23 @@ public class Van extends Vehicle
         super.act();
     }
     
+    
+    /*
+     * Method to initialize the sounds for this class
+     */
     public static void init() {
         cryingIndex = 0;
         crys = new GreenfootSound[3];
         for (int i=0;i<crys.length;i++) {
             crys[i] = new GreenfootSound("babyCry.mp3");
-            crys[i].setVolume(30);
+            crys[i].setVolume(20);
         }
         
         vroomIndex = 0;
         vrooms = new GreenfootSound[3];
         for (int i=0;i<vrooms.length;i++) {
             vrooms[i] = new GreenfootSound("vroom.mp3");
-            vrooms[i].setVolume(30);
+            vrooms[i].setVolume(40);
         }
     }
     
@@ -61,18 +65,22 @@ public class Van extends Vehicle
     }
     
     /**
-     * When a Car hit's a Pedestrian, it should knock it over
+     * When a Van hit's an Adult, it should knock it over
+     * When a Van hits a Baby, it should kidnap the Baby if it does not contain a Baby
+     * If it does contain a Baby, cause an explosion
      */
     public boolean checkHitPedestrian () {
         Pedestrian pedestrianInFront = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, 0, Pedestrian.class);
         Pedestrian pedestrianOnLeft = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, getImage().getHeight()/2, Pedestrian.class);
         Pedestrian pedestrianOnRight = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, -1*getImage().getHeight()/2, Pedestrian.class);
+        
+        //Check if the Pedestrian exists
         if(pedestrianInFront != null) {
-            if(pedestrianInFront instanceof Adult && pedestrianInFront.isAwake()) {
+            if(pedestrianInFront instanceof Adult && pedestrianInFront.isAwake()) { //If the Pedestrian is an Adult, run them over.
                 pedestrianInFront.knockDown();
                 return true;
             }
-            else if (pedestrianInFront instanceof Baby) {
+            else if (pedestrianInFront instanceof Baby) { //If the Pedestrian is a Baby, check if you are already containing a Baby. If you are not, kidnap the Baby and speed away. If you are, explode.
                 if(isContainingBaby) {
                     getWorld().addObject(new Explosion(70, 332/2, 347/2), getX() + getImage().getWidth()/2, getY() - 60);
                     pedestrianInFront.dies();

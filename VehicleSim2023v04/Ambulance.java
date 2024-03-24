@@ -13,11 +13,15 @@ public class Ambulance extends Vehicle
         
         maxSpeed = 2.5;
         speed = maxSpeed;
+        yOffset = 3;
         GreenfootImage image = getImage();
-        image.scale(image.getWidth()/3, image.getHeight()/3);
+        image.scale(image.getWidth()/3, image.getHeight()/3-3);
         setImage(image);
     }
     
+    /*
+     * Method to initialize the sounds for this class
+     */
     public static void init() {
         reviveSoundsIndex = 0;
         reviveSounds = new GreenfootSound[24];
@@ -43,13 +47,14 @@ public class Ambulance extends Vehicle
     public void act()
     {
         super.act();
-        
     }
 
     public boolean checkHitPedestrian () {
         Pedestrian pedestrianInFront = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, 0, Pedestrian.class);
-        Pedestrian pedestrianOnLeft = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, getImage().getHeight()/2+6, Pedestrian.class);
+        Pedestrian pedestrianOnLeft = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, getImage().getHeight()/2+3, Pedestrian.class);
         Pedestrian pedestrianOnRight = (Pedestrian)getOneObjectAtOffset((int)Math.ceil(speed) + getImage().getWidth()/2 + 1, -1*getImage().getHeight()/2-4, Pedestrian.class);
+        
+        //Check if the Pedestrian is awake. If it is not awake, then revive the Pedestrian
         
         if(pedestrianInFront != null && !pedestrianInFront.isAwake()) {
             pedestrianInFront.healMe();

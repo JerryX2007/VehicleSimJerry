@@ -1,10 +1,7 @@
 import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 
 /**
- * Write a description of class Head here.
- * 
- * @author (your name) 
- * @version (a version number or a date)
+ * The Head subclass
  */
 public class Head extends Train
 {

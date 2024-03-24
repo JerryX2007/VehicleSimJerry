@@ -2,7 +2,7 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 import java.util.ArrayList;
 
 /**
- * Write a description of class Snowstorm here.
+ * Write a description of class Rainstorm here.
  * 
  * @author (your name) 
  * @version (a version number or a date)
@@ -15,11 +15,13 @@ public class Rain extends Effect
     private int direction;
     private boolean turned;
     private boolean stop;
-    private GreenfootSound windSound;
+    private GreenfootSound rainSound;
 
     public Rain () {
         actsLeft = 300;
         speed = 3;
+        rainSound = new GreenfootSound("rain.mp3");
+        rainSound.setVolume(50);
     }
 
     public void addedToWorld (World w){
@@ -36,6 +38,9 @@ public class Rain extends Effect
     public void act()
     {
         if (this != null && getWorld() != null) { // Check if the object and its world are still valid
+            if(!rainSound.isPlaying()) {
+                rainSound.play();
+            }
             if(actsLeft <= 60) {
                 fade(actsLeft, 60);
             }
@@ -46,22 +51,17 @@ public class Rain extends Effect
             }
             if (actsLeft == 0){
                 getWorld().removeObject(this);
+                rainSound.stop();
                 return;
+                
             }
-            
-            // From Mr. Cohen's demo code
-            // slows down anything that touches it
-            ArrayList<Vehicle> vehicles = (ArrayList<Vehicle>) getIntersectingObjects(Vehicle.class);
-            for (Vehicle v : vehicles){
-                v.setSpeed(0.55);
-            }
-            ArrayList<Pedestrian> peds = (ArrayList<Pedestrian>) getIntersectingObjects(Pedestrian.class);
-            for (Pedestrian p : peds){
-                p.setSpeed(0.55);
-            }
+
         }
     }
 
+    /*
+     * Method to make the "dead" Pedestrian bodies get swept away by the rain
+     */
     public void rainPedsEffect() {
         ArrayList<Pedestrian> peds = (ArrayList<Pedestrian>) getWorld().getObjects(Pedestrian.class);
         for (Pedestrian p : peds) {
@@ -83,6 +83,9 @@ public class Rain extends Effect
         }
     }
     
+    /*
+     * Method to draw the rain
+     */
     public static GreenfootImage drawRain (int width, int height, int density){
 
         Color[] swatch = new Color [32];

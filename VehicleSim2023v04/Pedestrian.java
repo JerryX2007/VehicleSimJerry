@@ -12,7 +12,8 @@ public abstract class Pedestrian extends SuperSmoothMover
     protected boolean awake, entering;
     protected static GreenfootSound[] deathSounds;
     protected static int deathSoundsIndex;
-
+    
+    
     /**
      * Act - do whatever the Pedestrian wants to do. This method is called whenever
      * the 'Act' or 'Run' button gets pressed in the environment.
@@ -27,14 +28,10 @@ public abstract class Pedestrian extends SuperSmoothMover
     }
     
     public void act() {
-        if(paused()) {
-            delayCount--;
-            return;
-        }
         // Awake is false if the Pedestrian is "knocked down"
         if (awake){
-            // Check in the direction I'm moving vertically for a Vehicle -- and only move if there is no Vehicle in front of me.
-            if (getOneObjectAtOffset(0, (int)(direction * getImage().getHeight()/2 + (int)(direction * speed)), Vehicle.class) == null){
+            // Check in the direction I'm moving vertically for a Vehicle or a Train -- and only move if there is no Vehicle or Train in front of me.
+            if (getOneObjectAtOffset(0, (int)(direction * getImage().getHeight()/2 + (int)(direction * speed)), Vehicle.class) == null && getOneObjectAtOffset(0, (int)(direction * getImage().getHeight()/2 + (int)(direction * speed)), Train.class) == null){
                 setLocation (getX(), getY() + (speed*direction));
             }
             if (direction == -1 && getY() < 100){
@@ -45,7 +42,9 @@ public abstract class Pedestrian extends SuperSmoothMover
         }
     }
     
-    // Initialize the sounds for pedestrian
+    /**
+     * Method to initialize the sounds for this class
+     */
     public static void init() {
         deathSoundsIndex = 0;
         deathSounds = new GreenfootSound[10];
@@ -73,7 +72,10 @@ public abstract class Pedestrian extends SuperSmoothMover
         awake = false;
         playDeathSound();
     }
-
+    
+    /**
+     * Setter method to set the awake state of the Pedestrian
+     */
     public void setAwake(boolean state) {
         awake = state;
     }
@@ -86,25 +88,43 @@ public abstract class Pedestrian extends SuperSmoothMover
         setRotation (0);
         awake = true;
     }
-
+    
+    /**
+     * Getter method to get the awake status of the Pedestrian
+     */
      public boolean isAwake () {
         return awake;
     }
     
-    public boolean paused() {
-        return delayCount > 0;
-    }
-    
-    public void setDelay(int actCount)
-    {
-        delayCount = actCount;
-    }
-    
+    /**
+     * Setter method to set the speed of the Pedestrian
+     */
     public void setSpeed(double spd){
         speed = spd;
     }
     
+    /**
+     * Method to remove the Pedestrian from the world if it "dies"
+     */
     public void dies(){
-        getWorld().removeObject(this);
+        if(getWorld() != null) {
+            getWorld().removeObject(this);
+        }
+    }
+    
+    protected boolean checkEdge() {
+        if (direction == 1)
+        { // if moving right, check 200 pixels to the right (above max X)
+            if (getX() > getWorld().getWidth() + 200){
+                return true;
+            }
+        } 
+        else 
+        { // if moving left, check 200 pixels to the left (negative values)
+            if (getX() < -200){
+                return true;
+            }
+        }
+        return false;
     }
 }

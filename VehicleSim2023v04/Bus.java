@@ -7,6 +7,8 @@ public class Bus extends Vehicle
 {
     private int delayCount;
     private double lastSpeed;
+    private static GreenfootSound[] busBeeps;
+    private static int beepIndex;
     public Bus(VehicleSpawner origin){
         super (origin); // call the superclass' constructor first
         
@@ -51,6 +53,7 @@ public class Bus extends Vehicle
             setDelay(60);
             speed = 0;
             getWorld().removeObject(p);
+            playBeepSound();
             return true;
         }
         if(pp != null && pp.isAwake()) {
@@ -59,6 +62,7 @@ public class Bus extends Vehicle
             speed = 0;
             setDelay(60);
             getWorld().removeObject(pp);
+            playBeepSound();
             return true;
         }
         if(ppp != null && ppp.isAwake()) {
@@ -67,9 +71,32 @@ public class Bus extends Vehicle
             speed = 0;
             setDelay(60);
             getWorld().removeObject(ppp);
+            playBeepSound();
             return true;
         }
         setMoving(true);
         return false;
     }
+    
+    /*
+     * Method to initialize the sounds for this class
+     */
+    public static void init() {
+        beepIndex = 0;
+        busBeeps = new GreenfootSound[6];
+        for (int i=0;i<busBeeps.length;i++) {
+            busBeeps[i] = new GreenfootSound("beep.mp3");
+            busBeeps[i].setVolume(40);
+        }
+    }
+    
+    //Code from Mr. Cohen
+    public void playBeepSound() {
+        busBeeps[beepIndex].play();
+        beepIndex++;
+        if (beepIndex >= busBeeps.length){
+            beepIndex = 0;
+        }
+    }
+    
 }
